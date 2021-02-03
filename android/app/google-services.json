@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "3612638254",
+    "firebase_url": "https://hippie-9a782.firebaseio.com",
+    "project_id": "hippie-9a782",
+    "storage_bucket": "hippie-9a782.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3612638254:android:1cf09d39d3b4240e1673bf",
+        "android_client_info": {
+          "package_name": "com.hippie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3612638254-qu7cg75evolr0a4fgjb3mhhr1ec3ilhs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1CAiAm5u46KkzZfVmEtVqGZokCrtNnok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3612638254-qu7cg75evolr0a4fgjb3mhhr1ec3ilhs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "3612638254-i9v03h6sdkijq3knrcgjjopth413ojqt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hippie"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
