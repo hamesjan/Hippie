@@ -17,6 +17,7 @@ class _CreateGameState extends State<CreateGame> {
   final _createGameKey = GlobalKey<FormState>();
 
   String name;
+  String yourName;
   String phonenumber;
   DateTime endDate;
   bool tennis = false;
@@ -31,10 +32,18 @@ class _CreateGameState extends State<CreateGame> {
   bool aussieracquetball = false;
   String score_privacy = 'Private';
   String bracket = 'Free For All';
+  String errorMessage;
 
 
 
   String validateName(String value) {
+    if (value == null || value.isEmpty) {
+      return "Missing Tournament Name";
+    }
+    return null;
+  }
+
+  String validateYourName(String value) {
     if (value == null || value.isEmpty) {
       return "Missing Name";
     }
@@ -82,6 +91,27 @@ class _CreateGameState extends State<CreateGame> {
             ),
             SizedBox(height: 10,),
             TextFormField(
+                onChanged: (value) => yourName = value,
+                autocorrect: false,
+                toolbarOptions: ToolbarOptions(
+                  copy: true,
+                  paste: true,
+                  selectAll: true,
+                  cut: true,
+                ),
+                maxLines: null,
+                validator: (value) => validateYourName(value),
+                decoration: InputDecoration(
+                    hintText: "Bob",
+                    labelText: 'Your Name',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(3))
+                    )
+                )
+            ),
+            SizedBox(height: 10,),
+
+            TextFormField(
                 onChanged: (value) => phonenumber = value,
                 autocorrect: false,
                 maxLines: null,
@@ -102,7 +132,7 @@ class _CreateGameState extends State<CreateGame> {
             ),
             SizedBox(height: 20,),
             Divider(thickness: 2,),
-            RaisedButton(
+            ElevatedButton(
               child: Row(
                 children: [
                   Icon(Icons.date_range),
@@ -190,7 +220,7 @@ class _CreateGameState extends State<CreateGame> {
               children: [
                 Expanded(child: Container(),),
                 Text(
-                  'Bracket Size',
+                  'Tournament Type',
                   style: TextStyle(
                       fontWeight: FontWeight.bold),
                 ),
@@ -391,24 +421,87 @@ class _CreateGameState extends State<CreateGame> {
             SizedBox(
               height: 15,
             ),
+            errorMessage == null ? Container() : Text(errorMessage, style: TextStyle(
+              color: Colors.red
+            ),),
+            SizedBox(height: 10,),
             CustomButton(
               text: 'Create',
               callback: () async{
-                if (_createGameKey.currentState.validate()){
-                  String id = UniqueKey().toString();
-                  var newTourey = await _firestore.collection('tourneys').document(id).setData({
-                    'uuid': id,
-                    'name' : name,
+                if (_createGameKey.currentState.validate() && endDate != null) {
+                  try {
+                    List Sports = [];
+                    if (tennis) {
+                      Sports.add('Tennis');
+                    }
+                    if (badminton) {
+                      Sports.add('Badminton');
+                    }
+                    if (pingpong) {
+                      Sports.add('Ping Pong');
+                    }
+                    if (racquetball) {
+                      Sports.add('Racquetball');
+                    }
+                    if (squash) {
+                      Sports.add('Squash');
+                    }
+                    if (pickelball) {
+                      Sports.add('Pickelball');
+                    }
+                    if (padel) {
+                      Sports.add('Padel');
+                    }
+                    if (paddeltennis) {
+                      Sports.add('Paddle Tennis');
+                    }
+                    if (aussieracquetball) {
+                      Sports.add('Aussie Racquetball');
+                    }
+                    String id = UniqueKey().toString();
+                    var newTourey = await _firestore.collection('tourneys')
+                        .document(id)
+                        .setData({
+                      'uuid': id,
+                      'name': name,
+                      'creator_name': yourName,
+                      'number': phonenumber,
+                      'sports': Sports,
+                      'type': bracket,
+                      'score_visibility': score_privacy == 'Private'
+                          ? true
+                          : false,
+                      'ended': false,
+                      'players': participate ? [
+                        {
+                          'name': yourName,
+                          'number': phonenumber
+                        }
+                      ] : [],
+                      'started': false,
+                      'endDate': endDate,
+                    });
+                    SharedPreferences prefs = await SharedPreferences
+                        .getInstance();
+                    prefs.setString('uuid', id);
+                    prefs.setBool('inGame', true);
+                    prefs.setString('name', yourName);
+                    prefs.setString('number', phonenumber);
+                    prefs.setBool('creator', true);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => Home()
+                        ));
+                  } catch (e){
+                    print(e.toString());
+                }
+
+                } else {
+                  setState(() {
+                    errorMessage = 'Pick a date.';
                   });
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('uuid', id);
-                  prefs.setBool('inGame', true);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => Home()
-                      ));
                 }
               },
 

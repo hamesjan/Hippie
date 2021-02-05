@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hippie/pages/pregame/create_game.dart';
+import 'package:hippie/pages/pregame/join_game.dart';
 import 'package:hippie/widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -74,14 +75,11 @@ class _JoinOrCreateState extends State<JoinOrCreate> {
               });
 
               if (_joinFormKey.currentState.validate() && tourneyExists) {
-                print('join');
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                prefs.setBool('inGame', true);
-                prefs.setString('uuid', '[#$code]');
-                Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => Home()
+                        builder: (BuildContext context) => JoinGame(
+                          code: code,
+                        )
                     ));
               } else {
                 setState(() {

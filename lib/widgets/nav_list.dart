@@ -63,8 +63,10 @@ class _MenuListTileWidgetState extends State<MenuListTileWidget> {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
                           prefs.setBool('inGame', false);
                           prefs.setString('uuid', 'none');
-                          print(prefs.getBool('inGame'));
-                          print(prefs.getString('uuid'));
+                          prefs.setString('name', '1023417');
+                          prefs.remove('name');
+                          prefs.remove('number');
+                          prefs.setBool('creator', false);
                           Navigator.pop(context);
                           Navigator.pop(context);
                           Navigator.push(context,
