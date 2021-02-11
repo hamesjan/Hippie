@@ -30,6 +30,7 @@ dependencies:
   shared_preferences:
   uuid:
   flutter_datetime_picker:
+  expandable:
   intl:
 
 dev_dependencies:

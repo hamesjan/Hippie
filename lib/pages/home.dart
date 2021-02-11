@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hippie/pages/creator_profile.dart';
 import 'package:hippie/pages/filler/tournament_ended.dart';
-import 'package:hippie/pages/ingame/main_bracket.dart';
+import 'package:hippie/pages/ingame/player_results.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hippie/pages/ingame/message_board.dart';
 import 'package:hippie/pages/pregame/join_or_create.dart';
 import 'package:hippie/pages/ingame/record_match.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,13 +36,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Future getInformation() async {
-    List info = [];
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String name = prefs.getString('name');
     String number = prefs.getString('number');
     String uuid = prefs.getString('uuid');
     bool creator = prefs.getBool('creator');
     var tourneyInfo = await _firestore.collection('tourneys').document(uuid).get();
+
     if (tourneyInfo.data['ended']) {
       prefs.setBool('inGame', false);
       prefs.remove('uuid');
@@ -51,14 +53,32 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       Navigator.of(context).popUntil((route) => route.isFirst);
       Navigator.of(context).pop();
       Navigator.push(context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => TournamentEnded()
-      ));
+          MaterialPageRoute(
+              builder: (BuildContext context) => TournamentEnded()
+          ));
     }
+
+    List info = [];
+    Map opponents = {};
+    int score;
+    List verifications = [];
+    tourneyInfo.data['players'].forEach((ele) => {
+      if(ele['name'] == name){
+      opponents = ele['versus'],
+        score = ele['overallScore'],
+        verifications = ele['verify'],
+      }
+    });
+
     info.add(tourneyInfo);
     info.add(name);
     info.add(number);
     info.add(creator);
+    info.add(opponents);
+    info.add(uuid);
+    info.add(score);
+    info.add(verifications);
+
     return info;
   }
 
@@ -79,44 +99,69 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 IconButton(
                   icon: Icon(Icons.refresh),
                   onPressed: ()async{
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                     Navigator.pop(context);
                     Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) => Home()
                     ));
                   },
                 ),
-                IconButton(
-                  icon: Icon(Icons.admin_panel_settings),
-                  onPressed: ()async{
-                    SharedPreferences prefs = await SharedPreferences
-                        .getInstance();
-                    prefs.setString('name', 'Tom');
-                    prefs.setString('number', '1234562134');
-                    prefs.setBool('creator', true);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.person),
-                  onPressed: ()async{
-                    SharedPreferences prefs = await SharedPreferences
-                        .getInstance();
-                    prefs.setString('name', 'Bob');
-                    prefs.setString('number', '1234123');
-                    prefs.setBool('creator', false);
-                  },
-                )
+                // IconButton(
+                //   icon: Icon(Icons.login),
+                //   onPressed: ()async{
+                //     Navigator.of(context).popUntil((route) => route.isFirst);
+                //     Navigator.pop(context);
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (BuildContext context) => JoinOrCreate()
+                //         ));
+                //   },
+                // ),
+                // IconButton(
+                //   icon: Icon(Icons.admin_panel_settings),
+                //   onPressed: ()async{
+                //     SharedPreferences prefs = await SharedPreferences
+                //         .getInstance();
+                //     prefs.setString('name', 'Tom');
+                //     prefs.setString('number', '1');
+                //     prefs.setBool('creator', true);
+                //   },
+                // ),
+                // IconButton(
+                //   icon: Icon(Icons.person),
+                //   onPressed: ()async{
+                //     SharedPreferences prefs = await SharedPreferences
+                //         .getInstance();
+                //     prefs.setString('name', 'Joe');
+                //     prefs.setString('number', '2');
+                //     prefs.setBool('creator', false);
+                //   },
+                // )
               ],
             ),
             body: SafeArea(
               child: TabBarView(
                 controller: _tabController,
                 children: <Widget>[
-                  MainBracket(),
+                  MessageBoard(
+                    name: snapshot.data[1],
+                    uuid: snapshot.data[5],
+                  ),
+                  snapshot.data[3] ? CreatorProfile(
+                    name: snapshot.data[1],
+                    number: snapshot.data[2],
+                    players: snapshot.data[0].data['players'],
+                    started: snapshot.data[0].data['started'],
+                    code: snapshot.data[5],
+                    overallScore: snapshot.data[6],
+                  ):
                   Profile(
                     name: snapshot.data[1],
                     number: snapshot.data[2],
-                    creator: snapshot.data[3],
+                    players: snapshot.data[0].data['players'],
                     started: snapshot.data[0].data['started'],
+                    code: snapshot.data[5],
+                    overallScore: snapshot.data[6],
+
                   ),
                 ],
               ),
@@ -125,17 +170,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 FloatingActionButtonLocation.centerDocked,
             floatingActionButton: FloatingActionButton(
               onPressed: ()  async{
-                // SharedPreferences prefs = await SharedPreferences.getInstance();
-                // prefs.setBool('creator', true);
-                //   // Navigator.push(context,
-                  // MaterialPageRoute(
-                  //   builder: (BuildContext context) => RecordMatch()
-                  // ));
+                snapshot.data[0].data['started'] ?
+                  Navigator.push(context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => RecordMatch(
+                      opponents: snapshot.data[4].entries.map( (entry) => PlayerDataStructure(entry.key, entry.value)).toList(),
+                    )
+                  )) : showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Tournament has not been started yet.', textAlign: TextAlign.center,),
+                        actions: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    });
                 },
               child: Icon(Icons.add),
               backgroundColor: Colors.blue,
             ),
-            drawer: LeftDrawerWidget(),
+            drawer: LeftDrawerWidget(
+              verify: snapshot.data[7],
+              private: snapshot.data[0].data['score_visibility'],
+              players: snapshot.data[0].data['players'],
+              creator: snapshot.data[3]
+            ),
             bottomNavigationBar: SafeArea(
               child: TabBar(
                 controller: _tabController,
@@ -159,10 +225,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           );
         } else {
           return Scaffold(
-            body: CircularProgressIndicator(),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },
     );
   }
+}
+
+class PlayerDataStructure {
+  final String against;
+  final Map sports;
+
+  PlayerDataStructure(this.against, this.sports,);
 }

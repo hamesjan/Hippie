@@ -119,6 +119,9 @@ class _JoinGameState extends State<JoinGame> {
                       newPlayers.add({
                         'name': yourName,
                         'number': phonenumber,
+                        'overallScore': 0,
+                        'verify' : [],
+                        'versus': {},
                       });
                       await _firestore.collection('tourneys').document('[#${widget.code}]').updateData({
                         'players': newPlayers

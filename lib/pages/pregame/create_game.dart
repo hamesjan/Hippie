@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hippie/pages/filler/share_id.dart';
+import 'package:flutter/services.dart';
 import 'package:hippie/widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -25,13 +27,23 @@ class _CreateGameState extends State<CreateGame> {
   bool pingpong = false;
   bool racquetball = false;
   bool squash = false;
-  bool participate = false;
   bool pickelball = false;
   bool padel = false;
   bool paddeltennis = false;
   bool aussieracquetball = false;
+
+  int tennisPoints = 0;
+  int badmintonPoints = 0;
+  int pingpongPoints = 0;
+  int racquetballPoints = 0;
+  int squashPoints = 0;
+  int pickelballPoints = 0;
+  int padelPoints = 0;
+  int paddeltennisPoints = 0;
+  int aussieracquetballPoints = 0;
+  // bool participate = false;
   String score_privacy = 'Private';
-  String bracket = 'Free For All';
+  // String bracket = 'Free For All';
   String errorMessage;
 
 
@@ -156,23 +168,23 @@ class _CreateGameState extends State<CreateGame> {
               style: TextStyle(color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold),
             ),
             Divider(thickness: 2,),
-            Row(children: [
-              Expanded(child: Container(),),
-              Text('Will you be participating?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 15
-                ),),
-              Checkbox(
-                  value: participate,
-                  activeColor: Colors.green,
-                  onChanged:(bool newValue){
-                    setState(() {
-                      participate = newValue;
-                    });
-                  }),
-              Expanded(child: Container(),),
-            ],),
+            // Row(children: [
+            //   Expanded(child: Container(),),
+            //   Text('Will you be participating?',
+            //     textAlign: TextAlign.center,
+            //     style: TextStyle(
+            //         fontSize: 15
+            //     ),),
+            //   Checkbox(
+            //       value: participate,
+            //       activeColor: Colors.green,
+            //       onChanged:(bool newValue){
+            //         setState(() {
+            //           participate = newValue;
+            //         });
+            //       }),
+            //   Expanded(child: Container(),),
+            // ],),
             Row(
               children: [
                 Expanded(child: Container(),),
@@ -216,54 +228,58 @@ class _CreateGameState extends State<CreateGame> {
                 Expanded(child: Container(),)
               ],
             ),
-            Row(
-              children: [
-                Expanded(child: Container(),),
-                Text(
-                  'Tournament Type',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                DropdownButton<String>(
-                  value: bracket,
-                  icon: Icon(Icons.arrow_drop_down,
-                      color: Colors.black),
-                  iconSize: 24,
-                  elevation: 16,
-                  style: TextStyle(color: Colors.black),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.blue,
-                  ),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      bracket = newValue;
-                    });
-                  },
-                  items: <String>[
-                    'Free For All',
-                    'Brackets'
-                  ].map<DropdownMenuItem<String>>(
-                          (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value, style: TextStyle(
-                              fontWeight: FontWeight.normal
-                          ),),
-                        );
-                      }).toList(),
-                ),
-                Expanded(child: Container(),)
-              ],
-            ),
-            Divider(thickness: 2,),
+            // Row(
+            //   children: [
+            //     Expanded(child: Container(),),
+            //     Text(
+            //       'Tournament Type',
+            //       style: TextStyle(
+            //           fontWeight: FontWeight.bold),
+            //     ),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     DropdownButton<String>(
+            //       value: bracket,
+            //       icon: Icon(Icons.arrow_drop_down,
+            //           color: Colors.black),
+            //       iconSize: 24,
+            //       elevation: 16,
+            //       style: TextStyle(color: Colors.black),
+            //       underline: Container(
+            //         height: 2,
+            //         color: Colors.blue,
+            //       ),
+            //       onChanged: (String newValue) {
+            //         setState(() {
+            //           bracket = newValue;
+            //         });
+            //       },
+            //       items: <String>[
+            //         'Free For All',
+            //         'Brackets'
+            //       ].map<DropdownMenuItem<String>>(
+            //               (String value) {
+            //             return DropdownMenuItem<String>(
+            //               value: value,
+            //               child: Text(value, style: TextStyle(
+            //                   fontWeight: FontWeight.normal
+            //               ),),
+            //             );
+            //           }).toList(),
+            //     ),
+            //     Expanded(child: Container(),)
+            //   ],
+            // ),
+            // Divider(thickness: 2,),
+            Row(children: [
+
+            ],),
             Text('Sports', style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold
             ),),
+
             Row(children: [
               Expanded(child: Container(),),
               Text('Badminton',
@@ -279,6 +295,29 @@ class _CreateGameState extends State<CreateGame> {
                       badminton = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),
+                  child:
+              badminton ? TextFormField(
+                  onChanged: (value) => badmintonPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -296,6 +335,28 @@ class _CreateGameState extends State<CreateGame> {
                       tennis = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              tennis ? TextFormField(
+                  onChanged: (value) => tennisPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -313,6 +374,28 @@ class _CreateGameState extends State<CreateGame> {
                       padel = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              padel ? TextFormField(
+                  onChanged: (value) => padelPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -330,6 +413,28 @@ class _CreateGameState extends State<CreateGame> {
                       pickelball = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              pickelball ? TextFormField(
+                  onChanged: (value) => pickelballPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -347,6 +452,28 @@ class _CreateGameState extends State<CreateGame> {
                       paddeltennis = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              paddeltennis ? TextFormField(
+                  onChanged: (value) => paddeltennisPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -364,6 +491,28 @@ class _CreateGameState extends State<CreateGame> {
                       pingpong = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              pingpong ? TextFormField(
+                  onChanged: (value) => pingpongPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -381,6 +530,28 @@ class _CreateGameState extends State<CreateGame> {
                       racquetball = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              racquetball ? TextFormField(
+                  onChanged: (value) => racquetballPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -398,6 +569,28 @@ class _CreateGameState extends State<CreateGame> {
                       aussieracquetball = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),child:
+              aussieracquetball ? TextFormField(
+                  onChanged: (value) => aussieracquetballPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
             Row(children: [
@@ -415,6 +608,29 @@ class _CreateGameState extends State<CreateGame> {
                       squash = newValue;
                     });
                   }),
+              Container(
+                  width: 150,
+                  padding: EdgeInsets.all(5),
+                  child:
+              squash ? TextFormField(
+                  onChanged: (value) => squashPoints = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateNum(value),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: 'Point Value',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ): Container()),
               Expanded(child: Container(),),
             ],),
 
@@ -431,32 +647,43 @@ class _CreateGameState extends State<CreateGame> {
                 if (_createGameKey.currentState.validate() && endDate != null) {
                   try {
                     List Sports = [];
+                    Map points = {};
                     if (tennis) {
                       Sports.add('Tennis');
+                      points['Tennis'] = tennisPoints;
                     }
                     if (badminton) {
                       Sports.add('Badminton');
+                      points['Badminton'] = badmintonPoints;
                     }
                     if (pingpong) {
                       Sports.add('Ping Pong');
+                      points['Ping Pong'] = pingpongPoints;
                     }
                     if (racquetball) {
                       Sports.add('Racquetball');
+                      points['Racquetball'] = racquetballPoints;
                     }
                     if (squash) {
                       Sports.add('Squash');
+                      points['Squash'] = squashPoints;
                     }
                     if (pickelball) {
                       Sports.add('Pickelball');
+                      points['Pickelball'] = pickelballPoints;
                     }
                     if (padel) {
                       Sports.add('Padel');
+                      points['Padel'] = padelPoints;
                     }
                     if (paddeltennis) {
                       Sports.add('Paddle Tennis');
+                      points['Paddle Tennis'] = paddeltennisPoints;
                     }
                     if (aussieracquetball) {
                       Sports.add('Aussie Racquetball');
+                      points['Aussie Racquetball'] = aussieracquetballPoints;
+
                     }
                     String id = UniqueKey().toString();
                     var newTourey = await _firestore.collection('tourneys')
@@ -467,17 +694,21 @@ class _CreateGameState extends State<CreateGame> {
                       'creator_name': yourName,
                       'number': phonenumber,
                       'sports': Sports,
-                      'type': bracket,
+                      'pointValues': points,
+                      // 'type': bracket,
                       'score_visibility': score_privacy == 'Private'
                           ? true
                           : false,
                       'ended': false,
-                      'players': participate ? [
+                      'players': [
                         {
                           'name': yourName,
-                          'number': phonenumber
+                          'number': phonenumber,
+                          'versus': {},
+                          'overallScore': 0,
+                          'verify' : [],
                         }
-                      ] : [],
+                      ],
                       'started': false,
                       'endDate': endDate,
                     });
@@ -492,7 +723,9 @@ class _CreateGameState extends State<CreateGame> {
                     Navigator.pop(context);
                     Navigator.push(context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => Home()
+                            builder: (BuildContext context) => SharedId(
+                              code: id,
+                            )
                         ));
                   } catch (e){
                     print(e.toString());

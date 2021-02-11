@@ -33,6 +33,24 @@ class _JoinOrCreateState extends State<JoinOrCreate> {
 
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.admin_panel_settings),
+            onPressed: ()async{
+              SharedPreferences prefs = await SharedPreferences
+                  .getInstance();
+              prefs.setString('name', 'Tom');
+              prefs.setString('number', '1');
+              prefs.setBool('creator', true);
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context).pop();
+              Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => Home()
+                  ));
+            },
+          )
+        ],
       title: Text('Join Tournament'),
         leading: Container(),
       ),
@@ -66,22 +84,44 @@ class _JoinOrCreateState extends State<JoinOrCreate> {
             text: 'Join Tournament',
             callback: ()async {
               bool tourneyExists = false;
+              bool started = false;
               var currGames = await _firestore.collection('tourneys').getDocuments();
               currGames.documents.forEach((element) {
                 String temp = element.data['uuid'].toString();
                 if (code == temp.substring(2, 7)){
                   tourneyExists = true;
                 }
+                if (element.data['started']) {
+                  started = true;
+                }
               });
 
-              if (_joinFormKey.currentState.validate() && tourneyExists) {
+              if (_joinFormKey.currentState.validate() && tourneyExists && !started) {
                 Navigator.push(context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => JoinGame(
                           code: code,
                         )
                     ));
-              } else {
+              } else if (started){
+                showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('This tournament has already started.', textAlign: TextAlign.center,),
+                        actions: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    });
+              }
+              else {
                 setState(() {
                   _validate = true;
                 });

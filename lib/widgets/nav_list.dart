@@ -2,10 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hippie/pages/ingame/blank.dart';
 import 'package:hippie/pages/home.dart';
+import 'package:hippie/pages/ingame/incomplete_verfications.dart';
+import 'package:hippie/pages/ingame/player_results.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hippie/pages/pregame/join_or_create.dart';
 
 class MenuListTileWidget extends StatefulWidget {
+  final List verficiations;
+  final List players;
+  final bool private;
+  final bool creator;
+
+  const MenuListTileWidget({Key key, this.verficiations, this.players, this.private, this.creator}) : super(key: key);
   @override
   _MenuListTileWidgetState createState() => _MenuListTileWidgetState();
 }
@@ -29,19 +37,60 @@ class _MenuListTileWidgetState extends State<MenuListTileWidget> {
           },
         ),
         Divider(color: Colors.grey,),
+        widget.verficiations.length == 0 ?
         ListTile(
-          leading: Icon(Icons.check_box_outline_blank),
-          title: Text('Blank'),
+          leading: Icon(Icons.verified),
+          title: Text('Verify'),
+          onTap: (){
+            showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('You have no verification requests.', textAlign: TextAlign.center,),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  );
+                });
+          },
+        ):
+        ListTile(
+          leading: Icon(Icons.verified, color: Colors.blue,),
+          title: Text('Verify'),
           onTap: (){
             Navigator.pop(context);
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Blank()
+                    builder: (context) => LinkRequests(
+                      linkRequests: widget.verficiations,
+                    )
                 )
             );
           },
         ),
+      !widget.private || widget.creator ? Divider(color: Colors.grey) : Container(),
+        !widget.private || widget.creator ?  ListTile(
+          leading: Icon(Icons.playlist_add_check_outlined,),
+          title: Text('Current Standings'),
+          onTap: (){
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PlayerResults(
+                      players: widget.players,
+                    )
+                )
+            );
+          },
+        ): Container(),
         Divider(color: Colors.grey),
         ListTile(
           leading: Icon(Icons.delete_forever, color: Colors.red,),

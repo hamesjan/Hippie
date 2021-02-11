@@ -12,7 +12,7 @@ class _BlankState extends State<Blank> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: LeftDrawerWidget(),
+      // drawer: LeftDrawerWidget(),
       appBar: AppBar(),
       body: Container(),
     );
