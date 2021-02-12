@@ -121,8 +121,30 @@ class _CreatorProfileState extends State<CreatorProfile> {
           Divider(thickness: 2,),
 
           Container(
-            child: Text('Players', style: TextStyle(fontSize: 20),),
+            child: Text('Players', style: TextStyle(fontSize: 20, color: Colors.blue,)
           ),
+          ),
+          SizedBox(height: 10,),
+          Row(children: [
+            Container(
+              padding: EdgeInsets.only(left: 10),
+              child:
+              Text('Name', style: TextStyle(fontSize: 20), ),
+            ),
+            Expanded(child: Container(),),
+            Container(
+              padding: EdgeInsets.only(right: 10),
+              child:
+              Text('Phone Number', style: TextStyle(fontSize: 20),),
+            ),
+            Expanded(child: Container(),),
+            Container(
+              padding: EdgeInsets.only(right: 10),
+              child:
+              Text('Overall Score', style: TextStyle(fontSize: 20),),)
+
+          ],),
+          Divider(thickness: 2,),
          widget.players.length == 1 ? Text('Invite more people.') :
           // Column(children: widget.opponents.map((item) =>
          //  new PlayersListWidget(
@@ -136,6 +158,7 @@ class _CreatorProfileState extends State<CreatorProfile> {
              crossAxisAlignment: CrossAxisAlignment.start,
              children: [
                Container(width: MediaQuery.of(context).size.width,),
+
                Row(children: [
                  Container(
                    padding: EdgeInsets.only(left: 10),
@@ -146,7 +169,13 @@ class _CreatorProfileState extends State<CreatorProfile> {
                  Container(
                    padding: EdgeInsets.only(right: 10),
                    child:
-                   Text(item['number'], style: TextStyle(fontSize: 15),),)
+                   Text(item['number'], style: TextStyle(fontSize: 15),),
+                 ),
+                 Expanded(child: Container(),),
+                 Container(
+                   padding: EdgeInsets.only(right: 10),
+                   child:
+                   Text(item['overallScore'].toString(), style: TextStyle(fontSize: 15),),)
 
                ],),
              ],
@@ -192,7 +221,8 @@ class _CreatorProfileState extends State<CreatorProfile> {
                                         'played': false,
                                         'recorded': '',
                                         'verified': false,
-                                        'score': '',
+                                        'myScore': 0,
+                                        'oppScore': 0,
                                         'winner': '',
                                       };
                                     }
@@ -263,7 +293,7 @@ class _CreatorProfileState extends State<CreatorProfile> {
                             Navigator.of(context).pop();
                             Navigator.push(context,
                                 MaterialPageRoute(
-                                    builder: (BuildContext context) => JoinOrCreate()
+                                    builder: (BuildContext context) => Home()
                                 ));
                           },
                         ),

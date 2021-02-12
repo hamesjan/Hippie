@@ -53,6 +53,9 @@ class _LinkRequestsState extends State<LinkRequests> {
                           Container(child: Text("Sport: ${widget.linkRequests[index]['sport']}", style: TextStyle(
                               fontSize: 15
                           ),), padding: EdgeInsets.only(left: 16),),
+                          Container(child: Text("Score: ${widget.linkRequests[index]['myScore']} - ${widget.linkRequests[index]['oppScore']}", style: TextStyle(
+                              fontSize: 15
+                          ),), padding: EdgeInsets.only(left: 16),),
                           Container(child: Text("Winner: ${widget.linkRequests[index]['winner']}", style: TextStyle(
                               fontSize: 15
                           ),), padding: EdgeInsets.only(left: 16),),
@@ -79,7 +82,9 @@ class _LinkRequestsState extends State<LinkRequests> {
                               verifications.removeAt(index);
                               print(verifications);
                               // Getting increment up
-                              int incUp = tData.data['pointValues'][widget.linkRequests[index]['sport']];
+                              int incUpMe = widget.linkRequests[index]['myScore'];
+                              int inc = widget.linkRequests[index]['myScore'];
+
 
                               tData.data['players'].forEach((ele) {
                                 if (ele['name'] == name) {
@@ -93,7 +98,7 @@ class _LinkRequestsState extends State<LinkRequests> {
                                   newPlayerData.add({
                                     'name': ele['name'],
                                     'number': ele['number'],
-                                    'overallScore': widget.linkRequests[index]['winner'] == ele['name']? ele['overallScore'] + incUp :ele['overallScore'],
+                                    'overallScore': ele['overallScore'] + widget.linkRequests[index]['myScore'],
                                     'verify': verifications,
                                     'versus': versus,
                                   });
@@ -108,7 +113,7 @@ class _LinkRequestsState extends State<LinkRequests> {
                                   newPlayerData.add({
                                     'name': ele['name'],
                                     'number': ele['number'],
-                                    'overallScore': widget.linkRequests[index]['winner'] == widget.linkRequests[index]['against']? ele['overallScore'] + incUp :ele['overallScore'],
+                                    'overallScore':  ele['overallScore'] + widget.linkRequests[index]['oppScore'],
                                     'verify': ele['verify'],
                                     'versus': versus,
                                   });
@@ -156,7 +161,6 @@ class _LinkRequestsState extends State<LinkRequests> {
                                 }
                               });
                               verifications.remove(widget.linkRequests[index]);
-
                               tData.data['players'].forEach((ele) {
                                 if (ele['name'] == name) {
                                   newPlayerData.add({

@@ -92,7 +92,7 @@ class _MenuListTileWidgetState extends State<MenuListTileWidget> {
           },
         ): Container(),
         Divider(color: Colors.grey),
-        ListTile(
+        !widget.creator ? ListTile(
           leading: Icon(Icons.delete_forever, color: Colors.red,),
           title: Text('Leave Tournament?', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),),
           onTap: ()async {
@@ -135,7 +135,7 @@ class _MenuListTileWidgetState extends State<MenuListTileWidget> {
                 });
 
           },
-        ),
+        ) : Container(),
       ],
     );
   }

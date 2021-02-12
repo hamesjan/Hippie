@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hippie/pages/creator_profile.dart';
 import 'package:hippie/pages/filler/tournament_ended.dart';
+import 'package:hippie/pages/ingame/blank.dart';
 import 'package:hippie/pages/ingame/player_results.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hippie/pages/ingame/message_board.dart';
@@ -54,7 +55,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       Navigator.of(context).pop();
       Navigator.push(context,
           MaterialPageRoute(
-              builder: (BuildContext context) => TournamentEnded()
+              builder: (BuildContext context) => TournamentEnded(players: tourneyInfo.data['players'],)
           ));
     }
 
@@ -106,6 +107,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ));
                   },
                 ),
+
                 // IconButton(
                 //   icon: Icon(Icons.login),
                 //   onPressed: ()async{
@@ -155,13 +157,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     overallScore: snapshot.data[6],
                   ):
                   Profile(
+                    private: snapshot.data[0].data['score_visibility'],
                     name: snapshot.data[1],
                     number: snapshot.data[2],
                     players: snapshot.data[0].data['players'],
                     started: snapshot.data[0].data['started'],
                     code: snapshot.data[5],
                     overallScore: snapshot.data[6],
-
                   ),
                 ],
               ),

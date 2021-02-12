@@ -5,23 +5,26 @@ import 'package:hippie/pages/home.dart';
 import 'package:hippie/widgets/custom_button.dart';
 import 'package:hippie/widgets/players_list_widget.dart';
 import 'package:hippie/widgets/sport_record_widget.dart';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VersusPage extends StatefulWidget {
-  final String name; // Bob
+  final String oppName; // Bob
+  final String yourName;
   final List<GameHistoryStructure> history;
   final List sports;
 
-  const VersusPage({Key key, this.name, this.history, this.sports}) : super(key: key);
+  const VersusPage({Key key, this.oppName, this.yourName, this.history, this.sports}) : super(key: key);
   @override
   _VersusPageState createState() => _VersusPageState();
 }
 
 class _VersusPageState extends State<VersusPage> {
    String sportPlayed;
-   String score;
-   bool winner = false;
+   int myScore;
+   int oppScore;
+
 
 
 
@@ -45,7 +48,7 @@ class _VersusPageState extends State<VersusPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text("vs. ${widget.name}"),
+        title:  Text("vs. ${widget.oppName}"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -93,43 +96,57 @@ class _VersusPageState extends State<VersusPage> {
                 Expanded(child: Container(),)
               ],
             ),
-            Row(children: [
-              Expanded(child: Container(),),
-              Text('Did you win?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 15
-                ),),
-              Checkbox(
-                  value: winner,
-                  activeColor: Colors.green,
-                  onChanged:(bool newValue){
-                    setState(() {
-                      winner = newValue;
-                    });
-                  }),
-              Expanded(child: Container(),),
-            ],),
             SizedBox(height: 10,),
-            TextFormField(
-                onChanged: (value) => score = value,
-                autocorrect: false,
-                toolbarOptions: ToolbarOptions(
-                  copy: true,
-                  paste: true,
-                  selectAll: true,
-                  cut: true,
-                ),
-                maxLines: null,
-                validator: (value) => validateScore(value),
-                decoration: InputDecoration(
-                    hintText: "45-13",
-                    labelText: 'Score',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3))
-                    )
-                )
-            ),
+            Row(children: [
+              Container(
+                  width: 150,
+                  child:TextFormField(
+                  onChanged: (value) => myScore = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateScore(value.toString()),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: "${widget.yourName}'s points ",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ),),
+              Expanded(child: Container(child: Text('-',
+                style: TextStyle(
+                  fontSize: 50
+                ), textAlign: TextAlign.center,),),),
+              Container(
+                  width: 150,
+                  child:TextFormField(
+                  onChanged: (value) => oppScore = int.parse(value),
+                  autocorrect: false,
+                  toolbarOptions: ToolbarOptions(
+                    copy: true,
+                    paste: true,
+                    selectAll: true,
+                    cut: true,
+                  ),
+                  validator: (value) => validateScore(value.toString()),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      labelText: "${widget.oppName}'s points ",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(3))
+                      )
+                  )
+              ) ,),
+
+
+            ],),
             Container(
               padding: EdgeInsets.all(16),
               child: CustomButton(
@@ -140,25 +157,27 @@ class _VersusPageState extends State<VersusPage> {
                     SharedPreferences prefs = await SharedPreferences
                         .getInstance();
                     String uuid = prefs.getString('uuid');
-                    String name = prefs.getString('name');
+                    String name = widget.yourName;
                     List newPlayerData = [];
                     var tData = await _firestore.collection('tourneys')
                         .document(uuid)
                         .get();
 
 
-
                     tData.data['players'].forEach((ele) {
                       if (ele['name'] == name) {
                         Map versus = ele['versus'];
-                        Map tempAgainst = versus[widget.name];
+                        Map tempAgainst = versus[widget.oppName];
                         Map tempSportPlayed = tempAgainst[sportPlayed];
                         tempSportPlayed['played'] = true;
-                        tempSportPlayed['score'] = score;
+
+                        tempSportPlayed['myScore'] = myScore;
+                        tempSportPlayed['oppScore'] = oppScore;
+
                         tempSportPlayed['recorded'] = name;
-                        tempSportPlayed['winner'] = winner ? name : widget.name;
+                        tempSportPlayed['winner'] = myScore > oppScore ? name : widget.oppName;
                         tempAgainst[sportPlayed] = tempSportPlayed;
-                        versus[widget.name] = tempAgainst;
+                        versus[widget.oppName] = tempAgainst;
                         newPlayerData.add({
                           'name': ele['name'],
                           'number': ele['number'],
@@ -166,24 +185,30 @@ class _VersusPageState extends State<VersusPage> {
                           'verify': ele['verify'],
                           'versus': versus,
                         });
-                      } else if (ele['name'] == widget.name){
+                      } else if (ele['name'] == widget.oppName){
                         Map versus = ele['versus'];
                         Map tempAgainst = versus[name];
                         Map tempSportPlayed = tempAgainst[sportPlayed];
                         tempSportPlayed['played'] = true;
-                        tempSportPlayed['score'] = score;
+
+                        // Change to myScore
+                        tempSportPlayed['myScore'] = oppScore;
+                        tempSportPlayed['oppScore'] = myScore;
+
+
                         tempSportPlayed['recorded'] = name;
-                        tempSportPlayed['winner'] = winner ? name : widget.name;
+                        tempSportPlayed['winner'] = myScore > oppScore ? name : widget.oppName;
                         tempAgainst[sportPlayed] = tempSportPlayed;
                         versus[name] = tempAgainst;
 
                         List currVerificationRequests = ele['verify'];
                         currVerificationRequests.add({
                           'sport': sportPlayed,
-                          'winner': winner ? name: widget.name,
+                          'winner': myScore > oppScore ? name: widget.oppName,
+                          'myScore': oppScore,
+                          'oppScore': myScore,
                           'against' : name
                         });
-
 
                         newPlayerData.add({
                           'name': ele['name'],
@@ -242,7 +267,8 @@ class _VersusPageState extends State<VersusPage> {
               expanded: SportRecordWidget(
                 played: item.history['played'],
                 verified: item.history['verified'],
-                score: item.history['score'],
+                myScore: item.history['myScore'],
+                oppScore: item.history['oppScore'],
                 winner: item.history['winner'],
               ),
             ) : new Container()).toList()),

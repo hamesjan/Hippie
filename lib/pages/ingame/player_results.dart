@@ -37,7 +37,8 @@ class PlayerResults extends StatelessWidget {
             PlayerResultsSportWidget(
               played: element.history['played'],
               verified: element.history['verified'],
-              score: element.history['score'],
+              myScore: element.history['myScore'],
+              oppScore: element.history['oppScore'],
               winner: element.history['winner'],
             ),
           ],
@@ -63,11 +64,18 @@ class PlayerResults extends StatelessWidget {
               new ExpandablePanel(
                 header:Container(
                   padding: EdgeInsets.all(16),
-                  child: Text(players[index]['name'], style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                    fontSize: 25,
-                  ),),
+                  child: Row(children: [
+                    Text("${players[index]['name']}", style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                      fontSize: 25,
+                    ),),
+                    Expanded(child: Container(),),
+                    Text("${players[index]['overallScore']}", style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),),
+                  ],)
 
                 ),
                 expanded: Column(children: tempList.map((item) =>

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hippie/pages/ingame/blank.dart';
 import 'package:expandable/expandable.dart';
 import 'package:hippie/pages/ingame/versus_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayersListWidget extends StatelessWidget {
   final String name;
@@ -13,7 +14,7 @@ class PlayersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: () async{
         List<GameHistoryStructure> tempPlayerData =
             playerData.entries.map( (entry) => GameHistoryStructure(entry.key, entry.value)).toList();
         List tempSports = [];
@@ -22,11 +23,14 @@ class PlayersListWidget extends StatelessWidget {
             tempSports.add(element.sport);
           }
         });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String yourName = prefs.getString('name');
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (BuildContext context) => VersusPage(
-                  name: name,
+                  oppName: name,
+                  yourName: yourName,
                   history: tempPlayerData,
                   sports: tempSports,
                 )));

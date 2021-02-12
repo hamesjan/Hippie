@@ -4,10 +4,11 @@ import 'package:flutter/cupertino.dart';
 class PlayerResultsSportWidget extends StatelessWidget {
   final bool played;
   final bool verified;
-  final String score;
+  final int myScore;
+  final int oppScore;
   final String winner;
 
-  const PlayerResultsSportWidget({Key key, this.played, this.verified, this.score, this.winner}) : super(key: key);
+  const PlayerResultsSportWidget({Key key, this.played, this.verified, this.myScore, this.oppScore, this.winner}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class PlayerResultsSportWidget extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Score: $score'),
+                Text('Score: $myScore - $oppScore'),
                 Text('Winner: $winner'),
                 verified ? Container(): Text('Waiting for Verification', style: TextStyle(
                     color: Colors.orange

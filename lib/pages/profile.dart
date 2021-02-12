@@ -10,9 +10,10 @@ class Profile extends StatefulWidget {
   final bool creator;
   final String code;
   final List players;
+  final bool private;
   final int overallScore;
 
-  const Profile({Key key, this.name, this.number, this.creator, this.started, this.players, this.code, this.overallScore}) : super(key: key);
+  const Profile({Key key, this.name, this.number, this.creator, this.started, this.players, this.private, this.code, this.overallScore}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -111,30 +112,56 @@ class _ProfileState extends State<Profile> {
             ],
           ),
           Divider(thickness: 2,),
-
           Container(
-      child: Text('Players', style: TextStyle(fontSize: 20),),
-    ),
-    Column(children: widget.players.map((item) =>
-    new Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children: [
-          Container(width: MediaQuery.of(context).size.width,),
+            child: Text('Players', style: TextStyle(fontSize: 20, color: Colors.blue,)
+            ),
+          ),
+          SizedBox(height: 10,),
           Row(children: [
             Container(
               padding: EdgeInsets.only(left: 10),
               child:
-              Text(item['name'], style: TextStyle(fontSize: 20, color: Colors.blue), ),
+              Text('Name', style: TextStyle(fontSize: 20), ),
             ),
             Expanded(child: Container(),),
             Container(
               padding: EdgeInsets.only(right: 10),
               child:
-              Text(item['number'], style: TextStyle(fontSize: 15),),)
+              Text('Phone Number', style: TextStyle(fontSize: 20),),
+            ),
+            widget.private ? Container() : Expanded(child: Container(),),
+            widget.private ? Container() : Container(
+              padding: EdgeInsets.only(right: 10),
+              child:
+              Text('Overall Score', style: TextStyle(fontSize: 20),),)
+
           ],),
+          Divider(thickness: 2,),
+    Column(children: widget.players.map((item) =>
+    new Container(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(width: MediaQuery.of(context).size.width,),
+            Row(children: [
+              Container(
+                padding: EdgeInsets.only(left: 10),
+                child:
+                Text(item['name'], style: TextStyle(fontSize: 20, color: Colors.blue), ),
+              ),
+              Expanded(child: Container(),),
+              Container(
+                padding: EdgeInsets.only(right: 10),
+                child:
+                Text(item['number'], style: TextStyle(fontSize: 15),),
+              ),
+              widget.private ? Container() : Expanded(child: Container(),),
+              widget.private ? Container() : Container(
+                padding: EdgeInsets.only(right: 10),
+                child:
+                Text(item['overallScore'].toString(), style: TextStyle(fontSize: 20),),)
+            ],),
         ],
       ),
     )

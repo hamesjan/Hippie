@@ -34,22 +34,24 @@ class _JoinOrCreateState extends State<JoinOrCreate> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            icon: Icon(Icons.admin_panel_settings),
-            onPressed: ()async{
-              SharedPreferences prefs = await SharedPreferences
-                  .getInstance();
-              prefs.setString('name', 'Tom');
-              prefs.setString('number', '1');
-              prefs.setBool('creator', true);
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.of(context).pop();
-              Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => Home()
-                  ));
-            },
-          )
+          // IconButton(
+          //   icon: Icon(Icons.admin_panel_settings),
+          //   onPressed: ()async{
+          //     SharedPreferences prefs = await SharedPreferences
+          //         .getInstance();
+          //     prefs.setBool('inGame', true);
+          //     prefs.setString('uuid', '[#6715f]');
+          //     prefs.setString('name', 'Joe');
+          //     prefs.setString('number', '2');
+          //     prefs.setBool('creator', false);
+          //     Navigator.of(context).popUntil((route) => route.isFirst);
+          //     Navigator.of(context).pop();
+          //     Navigator.push(context,
+          //         MaterialPageRoute(
+          //             builder: (BuildContext context) => Home()
+          //         ));
+          //   },
+          // )
         ],
       title: Text('Join Tournament'),
         leading: Container(),
@@ -90,9 +92,9 @@ class _JoinOrCreateState extends State<JoinOrCreate> {
                 String temp = element.data['uuid'].toString();
                 if (code == temp.substring(2, 7)){
                   tourneyExists = true;
-                }
-                if (element.data['started']) {
-                  started = true;
+                  if (element.data['started']) {
+                    started = true;
+                  }
                 }
               });
 
